@@ -1,6 +1,11 @@
 import argparse
+import os
 import sys
-from src.ranker import process_and_rank
+
+# Ensure src subdirectory is in python path
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "src"))
+
+from ranker import process_and_rank
 
 
 def main():

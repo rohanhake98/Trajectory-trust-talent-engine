@@ -1,10 +1,14 @@
 import argparse
 import os
+import sys
 
 import uvicorn
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+
+# Ensure current directory is in Python path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
 from ranker import process_and_rank
 

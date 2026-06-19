@@ -64,7 +64,7 @@ def process_and_rank(
         candidate_records.append(
             {
                 "candidate_id": candidate.candidate_id,
-                "score": final_score,
+                "score": round(final_score, 4),
                 "fit": fit,
                 "traj": traj,
                 "conv": conv,
@@ -87,7 +87,7 @@ def process_and_rank(
             {
                 "candidate_id": item["candidate_id"],
                 "rank": i,
-                "score": round(item["score"], 4),
+                "score": item["score"],
                 "reasoning": reasoning,
             }
         )
