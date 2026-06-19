@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talent Intelligence Engine</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Trajectory & Trust Talent Intelligence</h1>
+            <p>Candidate ranking under uncertainty for Senior AI Engineering roles</p>
+        </header>
+        
+        <main>
+            <!-- Upload section -->
+            <section class="upload-section card">
+                <h2>Upload Pool</h2>
+                <p>Select a <code>candidates.jsonl</code> file containing candidate profiles and behavioral signals.</p>
+                <form id="uploadForm">
+                    <input type="file" id="fileInput" accept=".jsonl" required>
+                    <button type="submit" id="submitBtn">Process & Rank</button>
+                </form>
+            </section>
+            
+            <!-- Dashboard Results placeholder -->
+            <section class="results-section card hidden" id="resultsSection">
+                <h2>Top 100 Ranked Candidates</h2>
+                <div class="filters">
+                    <input type="text" id="searchInput" placeholder="Search by name or skills...">
+                </div>
+                <div class="table-wrapper">
+                    <table id="candidatesTable">
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Candidate ID</th>
+                                <th>Final Score</th>
+                                <th>Reasoning Summary</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="/static/app.js"></script>
+</body>
+</html>

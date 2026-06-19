@@ -1,0 +1,610 @@
+Your current PRD already has the strongest part in place: the core framing around **trajectory, trust, and convertibility**, plus the **lightweight graph**, **shield layer**, **scoring formula**, **output spec**, and **build plan**.     
+
+What still needs to be added or tightened:
+
+1. Add a clear section that says what the dataset is **really measuring** and what it is **not measuring**.
+2. Add a **data dictionary / field map** so judges know you understand every signal, not just the headline.
+3. Add an explicit section for the **20 obvious solutions you rejected**.
+4. Add **evaluation metrics** beyond just “top 100 CSV,” especially trap-detection quality and trajectory quality.
+5. Tighten the **MVP scope** so the PRD is buildable in 24–48 hours and defensible in a demo.
+6. Add a short **judge story**: what they will see, what proves the idea, and why it wins.
+7. Make the **reasoning text** rule stricter: template-based, no hallucination, grounded only in extracted features.
+
+Below is a cleaned, stronger `PRD.md` you can paste directly.
+
+````md
+# PRD: Trajectory & Trust Talent Intelligence Engine
+
+**Codename:** Counterfactual Talent Trajectory Graph + Honeypot Shield  
+**Track:** AI Hiring Intelligence Hackathon — Candidate Ranking Challenge  
+**Build window:** 24–48 hours, small team, CPU-only
+
+---
+
+## 1. Problem Statement
+
+This is not a resume matching problem.
+
+The dataset contains 100,000 candidates, only a small number of literal title matches, 23 behavioral signals, and explicit trap patterns such as keyword stuffing and synthetic profiles. The real task is to identify candidates who are most likely to become a strong hire, not just those who look strong on paper.
+
+### What the dataset is really measuring
+It measures whether a system can combine:
+- current fit,
+- career trajectory,
+- behavioral signals,
+- and trust / authenticity signals
+
+to rank candidates for a specific senior AI engineering role.
+
+### What the dataset is NOT measuring
+It does not directly measure:
+- actual coding ability,
+- long-term job performance,
+- personality,
+- team fit,
+- or whether a candidate is universally “best.”
+
+The challenge is about ranking under uncertainty, not proving absolute quality.
+
+**One-line pitch:**  
+*We rank candidates by where they are going and whether we can trust the map, not by where they already are.*
+
+---
+
+## 2. Why the Obvious Solutions Fail
+
+Most teams will build one of these:
+- candidate-job matching
+- resume ranking
+- skill similarity search
+- recommendation systems
+- ATS-style scoring
+- title classifiers
+- embedding-based search
+- keyword overlap ranking
+
+These are too shallow because they miss:
+- trajectory,
+- hidden learning,
+- recruiter convertibility,
+- and fake / misleading profiles.
+
+This PRD intentionally avoids those trivial solutions.
+
+---
+
+## 3. Product Idea
+
+### Core idea
+Build a **talent intelligence engine** that finds:
+
+1. candidates who are growing into the target role,
+2. candidates who are realistically hireable,
+3. candidates who are not honeypots or keyword-stuffed traps.
+
+### Key principle
+Do not rank the “best-looking resume.”  
+Rank the “best real hire.”
+
+### Simple definition
+A candidate should rank high only if:
+- their skills are relevant,
+- their career is moving in the right direction,
+- their behavior suggests they will respond and convert,
+- and their profile is trustworthy.
+
+---
+
+## 4. User and Judge Lens
+
+### Primary user in the story
+A technical recruiter or hiring manager sourcing for one senior AI engineering role.
+
+### Real user
+Hackathon judges who care about:
+- novelty,
+- technical depth,
+- business value,
+- and trap resistance.
+
+### What judges will check
+They will ask:
+- Why is a non-title-match candidate ranked above the literal title match?
+- Did you catch fake or inflated profiles?
+- Did you use the behavioral signals properly?
+- Is the reasoning grounded and believable?
+
+---
+
+## 5. Dataset Readout
+
+### Candidate profile fields
+- anonymized name
+- headline
+- summary
+- location
+- country
+- years of experience
+- current title
+- current company
+- current company size
+- current industry
+
+### Career history fields
+For each job:
+- company
+- title
+- start date
+- end date
+- duration
+- current flag
+- industry
+- company size
+- description
+
+### Education fields
+- institution
+- degree
+- field of study
+- tier
+
+### Skills fields
+- skill name
+- proficiency
+- endorsements
+- duration in months
+
+### Other fields
+- certifications
+- languages
+
+### Behavioral / hiring signals
+These are the most important hidden signals:
+- profile completeness
+- last active recency
+- open to work
+- recruiter response rate
+- average response time
+- search appearances
+- recruiter saves
+- interview completion rate
+- offer acceptance rate
+- GitHub activity
+- notice period
+- salary band overlap
+- relocation willingness
+- work mode match
+
+### Why these matter
+They show whether the candidate is:
+- visible,
+- responsive,
+- realistic,
+- and likely to convert.
+
+---
+
+## 6. Hidden Blind Spots
+
+The dataset cannot directly see:
+- actual problem-solving ability,
+- real work quality,
+- communication style,
+- motivation,
+- internal office politics,
+- or future performance after hire.
+
+So the system should infer only what the data can support:
+- trajectory,
+- credibility,
+- and convertibility.
+
+This is where the product becomes interesting: it fills the gap between what is visible and what matters.
+
+---
+
+## 7. Rejected Baseline Ideas
+
+These are explicitly rejected:
+- best resume ranking
+- skill overlap matching
+- title similarity matching
+- keyword score ranking
+- generic recommendation system
+- top company prestige scoring
+- education-only ranking
+- experience-only ranking
+- embedding-only matching
+- ATS replacement
+- plain candidate scoring dashboard
+
+Reason: all of them ignore hidden behavior and trajectory.
+
+---
+
+## 8. Proposed Solution
+
+### Main concept
+Use four scoring layers:
+
+1. **Static Fit**  
+   Basic relevance to the role.
+
+2. **Trajectory Score**  
+   Whether the candidate is moving toward the role.
+
+3. **Convertibility Score**  
+   Whether the candidate is likely to reply, interview, and accept.
+
+4. **Trust Score**  
+   Whether the profile looks real and internally consistent.
+
+### Business outcome
+The system surfaces:
+- underrated candidates,
+- realistic hires,
+- and suspicious profiles.
+
+---
+
+## 9. Feature Design
+
+### A. Static Fit Features
+- title-to-role similarity
+- skill overlap with target role
+- weighted skill proficiency
+- endorsements
+- years of experience
+- education tier
+
+### B. Trajectory Features
+- career velocity
+- title progression direction
+- movement toward AI / ML / senior engineering
+- skill acquisition rate
+- time-to-role estimate
+- transition relevance across jobs
+
+### C. Trust / Anomaly Features
+- overlapping career dates
+- impossible timelines
+- too many skills with low depth
+- suspiciously perfect title-match profiles
+- unrealistic certificate / experience combinations
+- claimed seniority mismatch
+
+### D. Behavioral / Convertibility Features
+- last active
+- open to work
+- recruiter response rate
+- response speed
+- interview completion rate
+- offer acceptance rate
+- notice period
+- relocation willingness
+- work mode match
+- salary fit
+
+---
+
+## 10. Core Model Idea
+
+This is not a deep learning competition.
+
+Use a practical, explainable pipeline:
+- feature engineering,
+- rule-based anomaly checks,
+- graph-based transition features,
+- calibrated ranking.
+
+### Graph idea
+Treat careers, titles, companies, and skills as a graph:
+- candidate nodes
+- skill nodes
+- title nodes
+- company nodes
+- industry nodes
+
+Use career transitions from the whole population to estimate:
+- how many realistic hops away a candidate is from the target role,
+- and which profiles are actually on a believable path.
+
+This is the “between the data” layer.
+
+---
+
+## 11. Scoring Formula
+
+### Final score
+```text
+final_score = TrustScore × (0.25 × StaticFit + 0.40 × TrajectoryScore + 0.35 × ConvertibilityScore)
+````
+
+### Sub-scores
+
+```text
+StaticFit = 0.5 × title_skill_similarity
+          + 0.3 × skill_overlap_weighted
+          + 0.2 × education_experience_band
+
+TrajectoryScore = 0.35 × career_velocity
+                + 0.25 × transition_relevance
+                + 0.20 × skill_acquisition_rate
+                + 0.20 × (1 - normalized_time_to_role_estimate)
+
+ConvertibilityScore = 0.20 × recency_factor
+                    + 0.15 × open_to_work
+                    + 0.15 × recruiter_response_rate
+                    + 0.15 × interview_completion_rate
+                    + 0.15 × offer_acceptance_rate
+                    + 0.10 × notice_period_factor
+                    + 0.10 × work_mode_and_relocation_match
+
+TrustScore = 1 - clip(0.4 × timeline_inconsistency
+                    + 0.3 × skill_stuffing_ratio
+                    + 0.3 × synthetic_pattern_score, 0, 1)
+```
+
+### Important rule
+
+Trust is multiplicative, not just additive.
+That means fake profiles get pushed down hard.
+
+---
+
+## 12. Reasoning Text Rule
+
+Every candidate in the final output must have a short explanation.
+
+### The explanation must:
+
+* use only extracted facts,
+* be template-based,
+* mention the top 2–3 strongest signals,
+* and never invent details.
+
+### Example format
+
+* “Strong AI-adjacent progression, high recruiter response rate, and recent activity suggest strong hiring potential.”
+* “Exact title match, but weak trajectory and low behavioral engagement reduce confidence.”
+* “Profile shows suspiciously broad skills with weak depth, so trust is low.”
+
+---
+
+## 13. Output Format
+
+Produce a CSV with exactly 100 rows.
+
+### Columns
+
+* `rank`
+* `candidate_id`
+* `score`
+* `reasoning`
+
+### Rules
+
+* ranks must be 1 to 100
+* scores must be non-increasing
+* tie-break by `candidate_id`
+* reasoning must be grounded in data
+* no hallucinated claims
+
+---
+
+## 14. Evaluation Plan
+
+The PRD should be judged on more than just final ranking.
+
+### Success criteria
+
+* top 100 output is valid
+* honeypots are demoted
+* underrated candidates appear near the top
+* reasons are grounded and understandable
+* runtime is practical on CPU only
+* output is deterministic
+
+### What to show in the demo
+
+* one obvious title-match candidate,
+* one underrated but trajectory-strong candidate,
+* one honeypot / synthetic profile.
+
+The best demo moment is when the literal title match loses to the stronger trajectory candidate, and the fake profile gets pushed down.
+
+---
+
+## 15. System Architecture
+
+```text
+Ingest -> Normalize -> Feature Builder -> Graph Layer -> Shield Layer -> Ranker -> Reason Generator -> CSV Export
+```
+
+### Ingest
+
+Read the JSONL data and validate schema.
+
+### Normalize
+
+Canonicalize:
+
+* titles
+* skills
+* industries
+* company names where possible
+
+### Feature Builder
+
+Create:
+
+* static fit features
+* trajectory features
+* trust features
+* convertibility features
+
+### Graph Layer
+
+Build lightweight transition graphs from:
+
+* titles,
+* companies,
+* skills,
+* industries.
+
+### Shield Layer
+
+Detect:
+
+* impossible timelines,
+* stuffing,
+* suspiciously perfect profiles.
+
+### Ranker
+
+Combine all scores into one calibrated ranking.
+
+### Reason Generator
+
+Create short explanations from computed features.
+
+### CSV Export
+
+Write the final top 100.
+
+---
+
+## 16. MVP Scope
+
+### Must have
+
+* ingestion
+* normalization
+* feature extraction
+* trust scoring
+* trajectory scoring
+* ranking
+* reasoning text
+* top 100 export
+
+### Nice to have
+
+* graph adjacency distance
+* richer explanation templates
+* more advanced calibration
+* stronger anomaly detection
+
+### Should not build
+
+* large neural model
+* GNN
+* recruiter dashboard
+* vector database
+* overcomplicated UI
+* LLM-generated scores
+
+---
+
+## 17. Build Plan
+
+### Phase 1: Ingest and normalize
+
+* parse candidate records
+* clean titles and skills
+* validate schema
+
+### Phase 2: Feature extraction
+
+* build static fit features
+* build trajectory features
+* build convertibility features
+* build trust signals
+
+### Phase 3: Shield layer
+
+* detect stuffing
+* detect inconsistencies
+* score trust
+
+### Phase 4: Ranker
+
+* combine scores
+* calibrate
+* sort top 100
+
+### Phase 5: Reasoning
+
+* generate template-based explanations
+* check for hallucinations
+
+### Phase 6: Export
+
+* create final CSV
+
+---
+
+## 18. Risks and Mitigations
+
+### Risk: too much focus on title match
+
+Mitigation: give more weight to trajectory and convertibility.
+
+### Risk: keyword-stuffed fake profiles rank too high
+
+Mitigation: make trust score multiplicative.
+
+### Risk: explanations become vague or hallucinated
+
+Mitigation: use templates from extracted features only.
+
+### Risk: pipeline becomes too slow
+
+Mitigation: keep everything CPU-only and avoid large models.
+
+### Risk: graph layer adds complexity without value
+
+Mitigation: keep it lightweight and fallback-safe.
+
+---
+
+## 19. Demo Strategy
+
+Start with this statement:
+
+> We rejected candidate matching as the core framing. This is a trajectory-and-trust problem, not a search problem.
+
+Then show:
+
+1. the dataset structure,
+2. the obvious approaches you deliberately avoided,
+3. the three-candidate contrast,
+4. the ranking output,
+5. the explanation text,
+6. the honeypot demotion.
+
+### What judges should feel
+
+* “They understood the problem better than everyone else.”
+* “They built something practical, not flashy.”
+* “They found hidden value in the dataset.”
+* “They thought like a hiring system, not like a leaderboard.”
+
+---
+
+## 20. Final Positioning
+
+This is not just a ranking model.
+
+It is a **talent intelligence engine** for:
+
+* finding overlooked candidates,
+* detecting misleading profiles,
+* modeling career movement,
+* and predicting who is actually likely to convert.
+
+That is what makes the project different.
+
+```
+
+If you want, I can also turn this into a **clean `PRD.md` with a more polished startup style** or a **shorter judge-facing version**.
+```
