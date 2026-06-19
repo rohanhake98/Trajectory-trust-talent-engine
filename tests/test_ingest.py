@@ -1,6 +1,7 @@
 import pytest
+
 from src.ingest import CandidateModel
-from src.normalize import normalize_title, normalize_skill
+from src.normalize import normalize_skill, normalize_title
 
 # Mock candidate dictionary matching candidate_schema.json
 MOCK_CANDIDATE = {
@@ -15,7 +16,7 @@ MOCK_CANDIDATE = {
         "current_title": "sr ml engineer",
         "current_company": "Tech Corp",
         "current_company_size": "201-500",
-        "current_industry": "Software"
+        "current_industry": "Software",
     },
     "career_history": [
         {
@@ -27,7 +28,7 @@ MOCK_CANDIDATE = {
             "is_current": True,
             "industry": "Software",
             "company_size": "201-500",
-            "description": "Led AI infrastructure setup."
+            "description": "Led AI infrastructure setup.",
         }
     ],
     "education": [
@@ -37,12 +38,12 @@ MOCK_CANDIDATE = {
             "field_of_study": "Computer Science",
             "start_year": 2018,
             "end_year": 2020,
-            "tier": "tier_1"
+            "tier": "tier_1",
         }
     ],
     "skills": [
         {"name": "pytorch", "proficiency": "expert", "endorsements": 15, "duration_months": 48},
-        {"name": "python3", "proficiency": "expert", "endorsements": 25, "duration_months": 60}
+        {"name": "python3", "proficiency": "expert", "endorsements": 25, "duration_months": 60},
     ],
     "redrob_signals": {
         "profile_completeness_score": 95.0,
@@ -67,9 +68,10 @@ MOCK_CANDIDATE = {
         "offer_acceptance_rate": 0.80,
         "verified_email": True,
         "verified_phone": True,
-        "linkedin_connected": True
-    }
+        "linkedin_connected": True,
+    },
 }
+
 
 def test_normalization_title():
     assert normalize_title("sr ml engineer") == "Senior Machine Learning Engineer"
@@ -78,12 +80,14 @@ def test_normalization_title():
     assert normalize_title("unrecognized title") == "Unrecognized Title"
     assert normalize_title(None) == "Unknown"
 
+
 def test_normalization_skill():
     assert normalize_skill("pytorch") == "PyTorch"
     assert normalize_skill("python3") == "Python"
     assert normalize_skill("k8s") == "Kubernetes"
     assert normalize_skill("unrecognized skill") == "unrecognized skill"
     assert normalize_skill(None) == "Unknown"
+
 
 def test_valid_candidate_parsing():
     # Verify candidate parses successfully with schema validations
@@ -93,9 +97,10 @@ def test_valid_candidate_parsing():
     assert len(candidate.career_history) == 1
     assert candidate.skills[0].name == "pytorch"
 
+
 def test_invalid_candidate_id_raises():
     bad_candidate = MOCK_CANDIDATE.copy()
     bad_candidate["candidate_id"] = "CAND_123"  # Invalid format
-    
+
     with pytest.raises(Exception):
         CandidateModel(**bad_candidate)

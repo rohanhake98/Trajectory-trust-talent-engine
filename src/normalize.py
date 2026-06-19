@@ -4,7 +4,10 @@ from typing import Optional
 TITLE_MAPPINGS = [
     (r"(?i)\b(senior|sr\.?)\s+(ai|artificial intelligence)\s+engineer\b", "Senior AI Engineer"),
     (r"(?i)\b(ai|artificial intelligence)\s+engineer\b", "AI Engineer"),
-    (r"(?i)\b(senior|sr\.?)\s+(ml|machine learning)\s+engineer\b", "Senior Machine Learning Engineer"),
+    (
+        r"(?i)\b(senior|sr\.?)\s+(ml|machine learning)\s+engineer\b",
+        "Senior Machine Learning Engineer",
+    ),
     (r"(?i)\b(ml|machine learning)\s+engineer\b", "Machine Learning Engineer"),
     (r"(?i)\b(senior|sr\.?)\s+software\s+engineer\b", "Senior Software Engineer"),
     (r"(?i)\bsoftware\s+engineer\b", "Software Engineer"),
@@ -48,6 +51,7 @@ SKILL_MAPPINGS = {
     "transformers": "Transformers",
 }
 
+
 def normalize_title(title: Optional[str]) -> str:
     """Canonicalizes raw job titles into standardized professional titles."""
     if not title:
@@ -58,6 +62,7 @@ def normalize_title(title: Optional[str]) -> str:
             return canonical
     # Title formatting fallback: Title Case
     return cleaned.title()
+
 
 def normalize_skill(skill: Optional[str]) -> str:
     """Canonicalizes raw skill names (e.g. PyTorch, python3) into standard names."""

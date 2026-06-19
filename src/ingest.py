@@ -1,7 +1,9 @@
 import json
 import re
-from typing import Generator, List, Optional, Dict
+from typing import Dict, Generator, List, Optional
+
 from pydantic import BaseModel, Field, field_validator
+
 
 class ProfileModel(BaseModel):
     anonymized_name: str
@@ -15,6 +17,7 @@ class ProfileModel(BaseModel):
     current_company_size: str
     current_industry: str
 
+
 class CareerHistoryModel(BaseModel):
     company: str
     title: str
@@ -26,6 +29,7 @@ class CareerHistoryModel(BaseModel):
     company_size: str
     description: str
 
+
 class EducationModel(BaseModel):
     institution: str
     degree: str
@@ -35,15 +39,18 @@ class EducationModel(BaseModel):
     grade: Optional[str] = None
     tier: str = Field(default="unknown")
 
+
 class SkillModel(BaseModel):
     name: str
     proficiency: str
     endorsements: int = Field(ge=0)
     duration_months: Optional[int] = Field(default=0, ge=0)
 
+
 class ExpectedSalaryModel(BaseModel):
     min: float = Field(ge=0)
     max: float = Field(ge=0)
+
 
 class RedrobSignalsModel(BaseModel):
     profile_completeness_score: float = Field(ge=0, le=100)
@@ -70,6 +77,7 @@ class RedrobSignalsModel(BaseModel):
     verified_phone: bool
     linkedin_connected: bool
 
+
 class CandidateModel(BaseModel):
     candidate_id: str
     profile: ProfileModel
@@ -85,9 +93,10 @@ class CandidateModel(BaseModel):
             raise ValueError("candidate_id must match format CAND_XXXXXXX")
         return v
 
+
 def stream_candidates(file_path: str) -> Generator[CandidateModel, None, None]:
     """Reads a JSONL file line-by-line and yields validated CandidateModel instances."""
-    with open(file_path, 'r', encoding='utf-8') as f:
+    with open(file_path, "r", encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
             if not line.strip():
                 continue
