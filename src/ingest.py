@@ -95,15 +95,35 @@ class CandidateModel(BaseModel):
 
 
 def stream_candidates(file_path: str) -> Generator[CandidateModel, None, None]:
-    """Reads a JSONL file line-by-line and yields validated CandidateModel instances."""
+    """Reads a JSONL file or a JSON array and yields validated CandidateModel instances."""
     with open(file_path, "r", encoding="utf-8") as f:
-        for line_num, line in enumerate(f, 1):
-            if not line.strip():
-                continue
+        # Check first non-empty character to detect if it's a JSON array
+        first_char = ""
+        for line in f:
+            stripped = line.strip()
+            if stripped:
+                first_char = stripped[0]
+                break
+        f.seek(0)
+
+        if first_char == "[":
             try:
-                data = json.loads(line)
-                yield CandidateModel(**data)
-            except json.JSONDecodeError as e:
-                raise ValueError(f"Malformed JSON on line {line_num}: {e}")
+                data_list = json.load(f)
+                if not isinstance(data_list, list):
+                    raise ValueError("Root element in JSON file must be a list.")
+                for i, item in enumerate(data_list, 1):
+                    yield CandidateModel(**item)
             except Exception as e:
-                raise ValueError(f"Validation failed on line {line_num}: {e}")
+                raise ValueError(f"JSON array validation failed: {e}")
+        else:
+            for line_num, line in enumerate(f, 1):
+                if not line.strip():
+                    continue
+                try:
+                    data = json.loads(line)
+                    yield CandidateModel(**data)
+                except json.JSONDecodeError as e:
+                    raise ValueError(f"Malformed JSON on line {line_num}: {e}")
+                except Exception as e:
+                    raise ValueError(f"Validation failed on line {line_num}: {e}")
+

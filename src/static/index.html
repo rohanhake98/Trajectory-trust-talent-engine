@@ -3,49 +3,276 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Talent Intelligence Engine</title>
+    <title>Trajectory & Trust | Talent Intelligence Engine</title>
+    <!-- Premium Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
+    <div class="glow-bg"></div>
     <div class="app-container">
-        <header>
-            <h1>Trajectory & Trust Talent Intelligence</h1>
-            <p>Candidate ranking under uncertainty for Senior AI Engineering roles</p>
+        <!-- Dashboard Header -->
+        <header class="app-header">
+            <div class="header-left">
+                <div class="logo-badge">TTE</div>
+                <div>
+                    <h1>Trajectory & Trust</h1>
+                    <p class="subtitle">Hackathon Talent Intelligence & Candidate Ranking Dashboard</p>
+                </div>
+            </div>
+            <div class="status-badge" id="serverStatus"><span class="pulse"></span> Engine Active</div>
         </header>
-        
+
         <main>
-            <!-- Upload section -->
-            <section class="upload-section card">
-                <h2>Upload Pool</h2>
-                <p>Select a <code>candidates.jsonl</code> file containing candidate profiles and behavioral signals.</p>
-                <form id="uploadForm">
-                    <input type="file" id="fileInput" accept=".jsonl" required>
-                    <button type="submit" id="submitBtn">Process & Rank</button>
-                </form>
-            </section>
-            
-            <!-- Dashboard Results placeholder -->
-            <section class="results-section card hidden" id="resultsSection">
-                <h2>Top 100 Ranked Candidates</h2>
-                <div class="filters">
-                    <input type="text" id="searchInput" placeholder="Search by name or skills...">
+            <!-- File Upload & Quick Specs -->
+            <div class="grid-2-col">
+                <section class="upload-section card">
+                    <h2>Upload Candidate Pool</h2>
+                    <p class="section-desc">Select or drag & drop a <code>candidates.jsonl</code> or <code>sample_candidates.json</code> file to process candidates in real-time.</p>
+                    
+                    <form id="uploadForm">
+                        <div class="drop-zone" id="dropZone">
+                            <span class="drop-icon">📤</span>
+                            <span class="drop-text">Drag & drop your file here or <strong>browse</strong></span>
+                            <input type="file" id="fileInput" accept=".jsonl,.json" required>
+                        </div>
+                        <div id="fileInfo" class="file-info hidden">
+                            <span class="file-name">filename.jsonl</span>
+                            <span class="remove-file" id="removeFile">✖</span>
+                        </div>
+                        <button type="submit" id="submitBtn" class="btn-primary">
+                            <span>Process & Rank Candidate Pool</span>
+                        </button>
+                    </form>
+                </section>
+
+                <section class="quick-specs card">
+                    <h2>Target Job Profile</h2>
+                    <div class="specs-grid">
+                        <div class="spec-item">
+                            <span class="spec-label">Role Title</span>
+                            <span class="spec-val">Senior AI Engineer</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Experience Band</span>
+                            <span class="spec-val">5 - 9 Years (Peak: 7)</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Core Tech stack</span>
+                            <span class="spec-val">Embeddings, Vector DBs, LTR, Fine-Tuning</span>
+                        </div>
+                        <div class="spec-item">
+                            <span class="spec-label">Multipliers</span>
+                            <span class="spec-val">Honeypot Shield (TrustGate) Enabled</span>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Loader Indicator -->
+            <div id="loadingOverlay" class="loader-overlay hidden">
+                <div class="spinner"></div>
+                <h3>Parsing & Ingesting Candidate Database</h3>
+                <p>Constructing career transition graph, running Dijkstra paths, and scoring 100k records...</p>
+            </div>
+
+            <!-- Stats & Contrasted Highlights -->
+            <div id="resultsContent" class="hidden animate-fade-in">
+                
+                <!-- Quick Stats Panel -->
+                <section class="stats-panel card">
+                    <h2>Database Ingestion Stats</h2>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-num" id="statTotalProcessed">-</div>
+                            <div class="stat-label">Candidates Analyzed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num text-emerald" id="statTopAvg">-</div>
+                            <div class="stat-label">Top 100 Avg Score</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num text-amber" id="statHoneypotCount">-</div>
+                            <div class="stat-label">Honeypots Detected</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-num text-rose" id="statBlocked">-</div>
+                            <div class="stat-label">Profiles Disqualified</div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Deep Dive Highlight Reels -->
+                <h2 class="section-title">Contrast Analysis: Obvious vs. Hidden vs. Blocked</h2>
+                <div class="highlights-grid">
+                    <!-- Obvious Title Match -->
+                    <div class="highlight-card obvious-match-card card">
+                        <div class="badge-label label-obvious">Obvious Title Match</div>
+                        <div class="hl-header">
+                            <h3 id="obName">Candidate Name</h3>
+                            <span class="hl-id" id="obId">CAND_0000000</span>
+                        </div>
+                        <div class="hl-title" id="obTitle">Senior AI Engineer</div>
+                        <div class="score-row">
+                            <div class="score-bubble bg-amber-soft">
+                                <span class="score-lbl">Final Score</span>
+                                <span class="score-val" id="obScore">0.000</span>
+                            </div>
+                            <div class="score-bubble bg-neutral-soft">
+                                <span class="score-lbl">Trust Gate</span>
+                                <span class="score-val text-emerald" id="obTrust">1.0</span>
+                            </div>
+                        </div>
+                        
+                        <div class="subscores-breakdown">
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Static Fit (Title/Skills)</span><span id="obFitVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-emerald" id="obFitBar" style="width: 0%"></div></div>
+                            </div>
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Trajectory (Velocity/Graph)</span><span id="obTrajVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-indigo" id="obTrajBar" style="width: 0%"></div></div>
+                            </div>
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Convertibility (Behavioral)</span><span id="obConvVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-cyan" id="obConvBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="hl-analysis">
+                            <strong>Recruiter Verdict:</strong>
+                            <p id="obReasoning">Matching keywords but stagnant progression. Good baseline, but lacks velocity.</p>
+                        </div>
+                    </div>
+
+                    <!-- Hidden Gem -->
+                    <div class="highlight-card hidden-gem-card card">
+                        <div class="badge-label label-gem">Hidden Gem</div>
+                        <div class="hl-header">
+                            <h3 id="gemName">Candidate Name</h3>
+                            <span class="hl-id" id="gemId">CAND_0000000</span>
+                        </div>
+                        <div class="hl-title" id="gemTitle">Software Engineer</div>
+                        <div class="score-row">
+                            <div class="score-bubble bg-emerald-soft">
+                                <span class="score-lbl">Final Score</span>
+                                <span class="score-val" id="gemScore">0.000</span>
+                            </div>
+                            <div class="score-bubble bg-neutral-soft">
+                                <span class="score-lbl">Trust Gate</span>
+                                <span class="score-val text-emerald" id="gemTrust">1.0</span>
+                            </div>
+                        </div>
+
+                        <div class="subscores-breakdown">
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Static Fit (Title/Skills)</span><span id="gemFitVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-emerald" id="gemFitBar" style="width: 0%"></div></div>
+                            </div>
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Trajectory (Velocity/Graph)</span><span id="gemTrajVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-indigo" id="gemTrajBar" style="width: 0%"></div></div>
+                            </div>
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Convertibility (Behavioral)</span><span id="gemConvVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-cyan" id="gemConvBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="hl-analysis">
+                            <strong>Recruiter Verdict:</strong>
+                            <p id="gemReasoning">High velocity, steep growth slope, strong open-source contribution, and optimal path-transition hops.</p>
+                        </div>
+                    </div>
+
+                    <!-- Blocked Honeypot -->
+                    <div class="highlight-card honeypot-card card">
+                        <div class="badge-label label-honeypot">Blocked Honeypot</div>
+                        <div class="hl-header">
+                            <h3 id="hpName">Candidate Name</h3>
+                            <span class="hl-id" id="hpId">CAND_0000000</span>
+                        </div>
+                        <div class="hl-title" id="hpTitle">Principal AI Architect</div>
+                        <div class="score-row">
+                            <div class="score-bubble bg-rose-soft">
+                                <span class="score-lbl">Final Score</span>
+                                <span class="score-val" id="hpScore">0.000</span>
+                            </div>
+                            <div class="score-bubble bg-rose-soft">
+                                <span class="score-lbl">Trust Gate</span>
+                                <span class="score-val text-rose" id="hpTrust">0.0</span>
+                            </div>
+                        </div>
+
+                        <div class="subscores-breakdown">
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Static Fit (Title/Skills)</span><span id="hpFitVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-emerald" id="hpFitBar" style="width: 0%"></div></div>
+                            </div>
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Trajectory (Velocity/Graph)</span><span id="hpTrajVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-indigo" id="hpTrajBar" style="width: 0%"></div></div>
+                            </div>
+                            <div class="subscore-bar">
+                                <div class="lbl-row"><span>Convertibility (Behavioral)</span><span id="hpConvVal">0.0</span></div>
+                                <div class="bar-bg"><div class="bar-fill bg-cyan" id="hpConvBar" style="width: 0%"></div></div>
+                            </div>
+                        </div>
+
+                        <div class="hl-analysis">
+                            <strong>Recruiter Verdict:</strong>
+                            <p id="hpReasoning">Timeline overlaps, credential inflation, or skill stuffing detected. Zeroed out by multiplicative gate.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="table-wrapper">
-                    <table id="candidatesTable">
-                        <thead>
-                            <tr>
-                                <th>Rank</th>
-                                <th>Candidate ID</th>
-                                <th>Final Score</th>
-                                <th>Reasoning Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody></tbody>
-                    </table>
-                </div>
-            </section>
+
+                <!-- Leaderboard Table -->
+                <section class="results-table-section card">
+                    <div class="section-header-flex">
+                        <h2>Top 100 Ranked Candidates</h2>
+                        <div class="search-box">
+                            <input type="text" id="searchInput" placeholder="Search ID, current title, or key reasons...">
+                            <span class="search-icon">🔍</span>
+                        </div>
+                    </div>
+                    
+                    <div class="table-wrapper">
+                        <table id="candidatesTable">
+                            <thead>
+                                <tr>
+                                    <th style="width: 80px;">Rank</th>
+                                    <th style="width: 150px;">Candidate ID</th>
+                                    <th style="width: 120px;">Score</th>
+                                    <th>Feature Alignment Breakdown</th>
+                                    <th>Grounded Reasoning Explanation</th>
+                                    <th style="width: 100px; text-align: center;">Audit</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Inserted dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
         </main>
     </div>
+
+    <!-- Candidate Detailed Audit Modal -->
+    <div id="auditModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Candidate Detailed Audit</h2>
+                <button class="close-btn" id="closeModalBtn">✖</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Filled dynamically -->
+            </div>
+        </div>
+    </div>
+
     <script src="/static/app.js"></script>
 </body>
 </html>

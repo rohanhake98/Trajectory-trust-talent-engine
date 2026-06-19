@@ -24,21 +24,23 @@ os.makedirs("output", exist_ok=True)
 
 @app.post("/api/upload-and-rank")
 async def upload_and_rank(file: UploadFile = File(...)):
-    """Receives a JSONL file, runs the ranker engine, and returns the top 100 results."""
-    if not file.filename.endswith((".jsonl", ".jsonl.gz")):
-        raise HTTPException(
-            status_code=400, detail="Invalid file format. Please upload a .jsonl candidate file."
-        )
+    """Receives a JSONL or JSON file, runs the ranker engine, and returns results + highlights."""
+    if not file.filename.endswith((".jsonl", ".jsonl.gz", ".json")):
+        err_msg = "Invalid file format. Please upload a .jsonl or .json candidate file."
+        raise HTTPException(status_code=400, detail=err_msg)
 
-    # Save uploaded file locally
-    uploaded_path = os.path.join("data", "uploaded_candidates.jsonl")
+    # Determine extension and save locally
+    ext = ".json" if file.filename.endswith(".json") else ".jsonl"
+    uploaded_path = os.path.join("data", f"uploaded_candidates{ext}")
     try:
         with open(uploaded_path, "wb") as buffer:
             buffer.write(await file.read())
 
         csv_output_path = os.path.join("output", "web_submission.csv")
-        results = process_and_rank(uploaded_path, export_csv_path=csv_output_path)
-        return {"status": "success", "results": results}
+        results, highlights = process_and_rank(
+            uploaded_path, export_csv_path=csv_output_path, return_highlights=True
+        )
+        return {"status": "success", "results": results, "highlights": highlights}
     except Exception as e:
         return JSONResponse(status_code=500, content={"status": "error", "message": str(e)})
 
