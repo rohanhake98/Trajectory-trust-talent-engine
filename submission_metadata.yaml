@@ -1,0 +1,63 @@
+# Redrob Hackathon — Submission Metadata
+# Auto-validated at Stage 3 code reproduction
+
+# ============================================================================
+# Team identity
+# ============================================================================
+team_name: "Trajectory-trust-talent-engine"
+
+primary_contact:
+  name: "Rohan Hake"
+  email: "rohanhake98@gmail.com"
+  phone: "+91-9876543210"
+
+team_members:
+  - name: "Rohan Hake"
+    email: "rohanhake98@gmail.com"
+    role: "ML Engineer"
+
+# ============================================================================
+# Code and reproducibility
+# ============================================================================
+github_repo: "https://github.com/rohanhake98/Trajectory-trust-talent-engine"
+sandbox_link: "http://127.0.0.1:8000"
+reproduce_command: "python rank.py --candidates ./data/candidates.jsonl --out ./output/submission.csv"
+
+# ============================================================================
+# Compute environment
+# ============================================================================
+compute:
+  platform: "Local Windows PC"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.13.1"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
+
+# ============================================================================
+# AI tools declaration
+# ============================================================================
+ai_tools_used:
+  - "Gemini"
+
+ai_usage_summary: |
+  Used Gemini (Antigravity AI coding assistant) for architectural design, code generation, refactoring, and test suite creation. All tests and linter rules were verified locally.
+
+# ============================================================================
+# Approach summary
+# ============================================================================
+methodology_summary: |
+  A full-stack, CPU-optimized Talent Intelligence Engine combining Static Fit, Career Trajectory, Recruitability/Convertibility, and a Multiplicative Anomaly Shield (Honeypot Filter) to demote synthetic/keyword-stuffed profiles. Uses NetworkX directed transition networks to trace candidate career velocity pathways, and FastAPI to serve the interactive web dashboard. Runs in under 3 minutes locally on 100K profiles.
+
+# ============================================================================
+# Declarations
+# ============================================================================
+declarations:
+  read_submission_spec: true
+  code_is_original_work: true
+  no_collusion: true
+  honeypot_check_done: true
+  reproduction_tested: true
