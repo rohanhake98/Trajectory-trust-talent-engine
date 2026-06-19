@@ -21,6 +21,7 @@ def find_contrasted_candidates(candidate_records: List[Dict[str, Any]]) -> Dict[
     - Blocked Honeypot: trust < 0.6, but has a high raw score.
     """
     from features import calculate_title_similarity
+
     honeypots = []
     hidden_gems = []
     obvious_matches = []
@@ -52,7 +53,7 @@ def find_contrasted_candidates(candidate_records: List[Dict[str, Any]]) -> Dict[
             "trust": round(trust, 4),
             "reasoning": generate_grounded_reason(item),
             "years_exp": candidate.profile.years_of_experience,
-            "skills": [s.name for s in candidate.skills[:5]]
+            "skills": [s.name for s in candidate.skills[:5]],
         }
 
         if trust < 0.6:
@@ -91,20 +92,22 @@ def find_contrasted_candidates(candidate_records: List[Dict[str, Any]]) -> Dict[
             curr_title = candidate.profile.current_title
             current_title = curr_title if curr_title else ""
 
-            all_by_trust.append({
-                "candidate_id": item["candidate_id"],
-                "name": candidate.profile.anonymized_name,
-                "current_title": current_title,
-                "score": score,
-                "raw_score": round(raw_score, 4),
-                "fit": round(fit, 4),
-                "traj": round(traj, 4),
-                "conv": round(conv, 4),
-                "trust": round(trust, 4),
-                "reasoning": generate_grounded_reason(item),
-                "years_exp": candidate.profile.years_of_experience,
-                "skills": [s.name for s in candidate.skills[:5]]
-            })
+            all_by_trust.append(
+                {
+                    "candidate_id": item["candidate_id"],
+                    "name": candidate.profile.anonymized_name,
+                    "current_title": current_title,
+                    "score": score,
+                    "raw_score": round(raw_score, 4),
+                    "fit": round(fit, 4),
+                    "traj": round(traj, 4),
+                    "conv": round(conv, 4),
+                    "trust": round(trust, 4),
+                    "reasoning": generate_grounded_reason(item),
+                    "years_exp": candidate.profile.years_of_experience,
+                    "skills": [s.name for s in candidate.skills[:5]],
+                }
+            )
         all_by_trust.sort(key=lambda x: (x["trust"], -x["raw_score"]))
         if all_by_trust:
             selected_honeypot = all_by_trust[0]
@@ -131,20 +134,25 @@ def find_contrasted_candidates(candidate_records: List[Dict[str, Any]]) -> Dict[
             current_title = curr_title if curr_title else ""
             title_sim = calculate_title_similarity(current_title, config.TARGET_TITLE)
 
-            all_candidates.append((title_sim, {
-                "candidate_id": item["candidate_id"],
-                "name": candidate.profile.anonymized_name,
-                "current_title": current_title,
-                "score": score,
-                "raw_score": round(raw_score, 4),
-                "fit": round(fit, 4),
-                "traj": round(traj, 4),
-                "conv": round(conv, 4),
-                "trust": round(trust, 4),
-                "reasoning": generate_grounded_reason(item),
-                "years_exp": candidate.profile.years_of_experience,
-                "skills": [s.name for s in candidate.skills[:5]]
-            }))
+            all_candidates.append(
+                (
+                    title_sim,
+                    {
+                        "candidate_id": item["candidate_id"],
+                        "name": candidate.profile.anonymized_name,
+                        "current_title": current_title,
+                        "score": score,
+                        "raw_score": round(raw_score, 4),
+                        "fit": round(fit, 4),
+                        "traj": round(traj, 4),
+                        "conv": round(conv, 4),
+                        "trust": round(trust, 4),
+                        "reasoning": generate_grounded_reason(item),
+                        "years_exp": candidate.profile.years_of_experience,
+                        "skills": [s.name for s in candidate.skills[:5]],
+                    },
+                )
+            )
         gems_fallback = [c[1] for c in all_candidates if c[0] < 0.8]
         gems_fallback.sort(key=lambda x: -x["score"])
         if gems_fallback:
@@ -168,20 +176,25 @@ def find_contrasted_candidates(candidate_records: List[Dict[str, Any]]) -> Dict[
             current_title = curr_title if curr_title else ""
             title_sim = calculate_title_similarity(current_title, config.TARGET_TITLE)
 
-            all_candidates.append((title_sim, {
-                "candidate_id": item["candidate_id"],
-                "name": candidate.profile.anonymized_name,
-                "current_title": current_title,
-                "score": score,
-                "raw_score": round(raw_score, 4),
-                "fit": round(fit, 4),
-                "traj": round(traj, 4),
-                "conv": round(conv, 4),
-                "trust": round(trust, 4),
-                "reasoning": generate_grounded_reason(item),
-                "years_exp": candidate.profile.years_of_experience,
-                "skills": [s.name for s in candidate.skills[:5]]
-            }))
+            all_candidates.append(
+                (
+                    title_sim,
+                    {
+                        "candidate_id": item["candidate_id"],
+                        "name": candidate.profile.anonymized_name,
+                        "current_title": current_title,
+                        "score": score,
+                        "raw_score": round(raw_score, 4),
+                        "fit": round(fit, 4),
+                        "traj": round(traj, 4),
+                        "conv": round(conv, 4),
+                        "trust": round(trust, 4),
+                        "reasoning": generate_grounded_reason(item),
+                        "years_exp": candidate.profile.years_of_experience,
+                        "skills": [s.name for s in candidate.skills[:5]],
+                    },
+                )
+            )
         all_candidates.sort(key=lambda x: -x[0])
         if all_candidates:
             selected_obvious = all_candidates[0][1]
@@ -189,7 +202,7 @@ def find_contrasted_candidates(candidate_records: List[Dict[str, Any]]) -> Dict[
     return {
         "blocked_honeypot": selected_honeypot,
         "hidden_gem": selected_gem,
-        "obvious_match": selected_obvious
+        "obvious_match": selected_obvious,
     }
 
 
@@ -230,11 +243,7 @@ def process_and_rank(
 
         # Score calculation
         # final_score = trust * (0.25 * fit + 0.40 * traj + 0.35 * conv)
-        final_score = trust * (
-            (0.25 * fit)
-            + (0.40 * traj)
-            + (0.35 * conv)
-        )
+        final_score = trust * ((0.25 * fit) + (0.40 * traj) + (0.35 * conv))
 
         candidate_records.append(
             {

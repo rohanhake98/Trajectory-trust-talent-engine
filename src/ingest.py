@@ -126,4 +126,3 @@ def stream_candidates(file_path: str) -> Generator[CandidateModel, None, None]:
                     raise ValueError(f"Malformed JSON on line {line_num}: {e}")
                 except Exception as e:
                     raise ValueError(f"Validation failed on line {line_num}: {e}")
-
