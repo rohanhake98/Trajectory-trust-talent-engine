@@ -1,4 +1,4 @@
-# Student Project Plan: Trajectory & Trust Talent Intelligence Engine
+# Project Plan: Trajectory & Trust Talent Intelligence Engine
 
 **Codename:** Counterfactual Talent Trajectory Graph + Honeypot Shield  
 **Track:** AI Hiring Intelligence — Candidate Ranking System  
@@ -41,7 +41,6 @@ The application runs entirely in memory on a single CPU core, completing the pro
 
 The repository workspace is organized as follows:
 ```text
-talent-intelligence-engine/
 ├── .github/
 │   └── workflows/
 │       └── python-tests.yml        # GitHub Actions test runner
@@ -56,10 +55,10 @@ talent-intelligence-engine/
 │   ├── main.py                     # Web API Controller & CLI entry routing
 │   ├── ingest.py                   # Data ingestion and schema validation
 │   ├── normalize.py                # Job titles and skills canonicalization maps
-│   ├── features.py                 # Extractor functions (Fit, Trajectory, Convertibility)
+│   ├── features.py                 # Feature extraction functions
 │   ├── graph.py                    # NetworkX career graph computations
 │   ├── shield.py                   # TrustScore and anomaly rule triggers
-│   ├── ranker.py                   # Aggregation mathematical weights
+│   ├── ranker.py                   # Aggregate formula and calibration
 │   ├── reason.py                   # Explanatory template generators
 │   └── config.py                   # System scoring weights and JD configs
 ├── tests/                          # Automated Verification Suite
@@ -68,7 +67,8 @@ talent-intelligence-engine/
 │   ├── test_shield.py
 │   └── test_ranker.py
 ├── .gitignore                      # Ignore virtual env, data/ and output/ folders
-├── Dockerfile                      # Optional docker build for local running
+├── rank.py                         # Root wrapper entry point (Stage 3 check)
+├── submission_metadata.yaml        # Portal metadata checklist (Stage 3 check)
 ├── requirements.txt                # Project dependency pins
 ├── pyproject.toml                  # Linter (Ruff) and Pytest configs
 └── README.md                       # Instructions on running the engine
@@ -108,10 +108,16 @@ File location: [main.py](file:///d:/INDIA%20RUN/src/main.py)
 
 ```python
 import argparse
-from fastapi import FastAPI, UploadFile, File
+import os
+import sys
+from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.staticfiles import StaticFiles
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, JSONResponse
 import uvicorn
+
+# Ensure current directory is in Python path for local imports
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 from ranker import process_and_rank
 
 app = FastAPI(title="Trajectory & Trust Engine API")
@@ -132,22 +138,6 @@ async def upload_and_rank(file: UploadFile = File(...)):
     
     top_candidates = process_and_rank(temp_path)
     return {"status": "success", "results": top_candidates}
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--server", action="store_true", help="Start the web server dashboard")
-    parser.add_argument("--input", help="CLI input JSONL path")
-    parser.add_argument("--output", help="CLI output CSV path")
-    args = parser.parse_args()
-
-    if args.server:
-        print("Starting local dashboard at http://localhost:8000")
-        uvicorn.run("main:app", host="127.0.0.1", port=8000, reload=True)
-    elif args.input and args.output:
-        # Standard CLI run
-        process_and_rank(args.input, export_csv_path=args.output)
-    else:
-        parser.print_help()
 ```
 
 ---
@@ -162,68 +152,48 @@ This means any profile with a TrustScore of $0.0$ (due to timeline anomalies or 
 
 ---
 
-## 6. Project Phases (0% to 100% Roadmap)
+## 6. Project Execution Steps (0% to 100% Roadmap)
 
-### Phase 1: Local Setup & Scaffolding (0% - 15%)
-- **Objective:** Configure local development environment and workspace files.
-- **Tasks:**
-  1. Create local python environment and configure [requirements.txt](file:///d:/INDIA%20RUN/requirements.txt):
-     ```bash
-     python -m venv .venv
-     source .venv/bin/activate  # Or .venv\Scripts\activate on Windows
-     pip install -r requirements.txt
-     ```
-  2. Setup Ruff and Pytest configs in [pyproject.toml](file:///d:/INDIA%20RUN/pyproject.toml).
-  3. Set up the basic directory folders, including the `src/static` directory.
+The project follows a strict 13-step pipeline to transform raw dataset lines into validated submissions.
 
----
+### Step 1: Setup Project (0% - 10%) - [COMPLETED]
+Configure the directory layout (`src/`, `output/`, `data/`), setup Python virtual environments, and construct the `.gitignore` rules preventing gzipped database leaks. Configure linter settings under `[tool.ruff.lint]` in `pyproject.toml`.
 
-### Phase 2: Ingest & Normalization (15% - 30%)
-- **Objective:** Build the JSONL file parsing engine and standardized skill/title canonicalization regex lookup.
-- **Tasks:**
-  1. Write [ingest.py](file:///d:/INDIA%20RUN/src/ingest.py) using generator patterns.
-  2. Build regex normalization dictionary mappings in [normalize.py](file:///d:/INDIA%20RUN/src/normalize.py).
+### Step 2: Extract & Load Data (10% - 20%) - [COMPLETED]
+Ingest candidate JSONL profiles memory-efficiently using Python generator loops, performing schema-level constraints checks with Pydantic v2.
 
----
+### Step 3: Data Cleaning (20% - 30%) - [COMPLETED]
+Develop regex-based normalizations for job titles and skill variations (standardizing case capitalizations and common abbreviations) to support high-fidelity matching. Translate career start and end dates into employment durations in months.
 
-### Phase 3: Core Analytics (Static, Trajectory, Convertibility) (30% - 50%)
-- **Objective:** Compute basic relevance, progression metrics, and behavioral scores.
-- **Tasks:**
-  1. Use Scikit-Learn TF-IDF to score semantic title matches in [features.py](file:///d:/INDIA%20RUN/src/features.py).
-  2. Calculate `career_velocity` (promotions normalized by workforce tenure) and aggregate convertibility signals.
+### Step 4: Feature Engineering (CORE) (30% - 45%) - [COMPLETED]
+Compute TF-IDF current title similarity, target skill overlap scores, candidate career promotions velocity, target skill growth rates, and extract 23 recruiter convertibility signals.
 
----
+### Step 5: Build Trust / Shield Layer (45% - 55%) - [COMPLETED]
+Construct chronological date validation algorithms to flag timeline overlaps. Formulate skill stuffing checks (high skill counts with near-zero endorsements) and title inflation triggers to output a candidate `TrustScore`.
 
-### Phase 4: Graph & Shield Implementation (50% - 70%)
-- **Objective:** Map career jumps and check profile chronological integrity.
-- **Tasks:**
-  1. Write [graph.py](file:///d:/INDIA%20RUN/src/graph.py). Use NetworkX to build a directed career path graph to compute hop distances.
-  2. Implement chronological date validation and skill density checks in [shield.py](file:///d:/INDIA%20RUN/src/shield.py) to flag anomalies.
+### Step 6: Build Scoring System (55% - 65%) - [COMPLETED]
+Combine the sub-scores using the multiplicative trust formula. Normalizes all scoring values to a standard $[0.0 - 1.0]$ range.
 
----
+### Step 7: Rank Candidates (65% - 75%) - [COMPLETED]
+Compute final scores for the candidate database. Sort candidates descending by score and break ties alphabetically by candidate ID ascending. Select the top 100 profiles.
 
-### Phase 5: Calibration & API Layer (70% - 85%)
-- **Objective:** Package the scoring engine, implement deterministic ranking, and construct FastAPI API endpoints.
-- **Tasks:**
-  1. Write final scoring weights and sorting logic in [ranker.py](file:///d:/INDIA%20RUN/src/ranker.py).
-  2. Implement API routing in [main.py](file:///d:/INDIA%20RUN/src/main.py) to parse uploaded files and return structured JSON records.
+### Step 8: Generate Reasoning (75% - 85%) - [COMPLETED]
+Generate 1-2 sentence template explanations incorporating specific profile facts (such as years of experience, current title, matched vector DBs, and notice period concerns) to satisfy manual review checks with zero hallucination.
 
----
+### Step 9: Create Output CSV (85% - 90%) - [COMPLETED]
+Format results to output the CSV using the exact column ordering (`candidate_id,rank,score,reasoning`) and row limits (exactly 100 rows). Round scores to 4 decimal places before sorting to align tie-breaks.
 
-### Phase 6: Frontend Development (85% - 95%)
-- **Objective:** Build a modern, dark-mode single-page recruiter dashboard using Vanilla HTML/CSS/JS.
-- **Tasks:**
-  1. Write [index.html](file:///d:/INDIA%20RUN/src/static/index.html) with input file fields, scoreboard lists, and three-candidate contrast cards.
-  2. Write [styles.css](file:///d:/INDIA%20RUN/src/static/styles.css) featuring a responsive layout, dark-mode palette, and transition animations.
-  3. Write [app.js](file:///d:/INDIA%20RUN/src/static/app.js) to upload files asynchronously, populate candidate tables dynamically, filter results by keyword, and trigger popups detailing trust scores.
+### Step 10: Validate Output (90% - 93%) - [COMPLETED]
+Verify that the output has no candidate ID duplicates and strictly non-increasing score order. Confirm compliance by executing the official validator script.
 
----
+### Step 11: Prepare Demo (93% - 96%) - [IN PROGRESS]
+Configure the single-page recruiter dashboard server. Retrieve three contrasted candidate profiles (a standard title match, an underrated high-trajectory gem, and a flagged honeypot profile) to demonstrate live score differentiation.
 
-### Phase 7: GitHub CI & Verification (95% - 100%)
-- **Objective:** Establish automatic tests on GitHub and perform local validation.
-- **Tasks:**
-  1. Write GitHub Actions workflow at [.github/workflows/python-tests.yml](file:///d:/INDIA%20RUN/.github/workflows/python-tests.yml).
-  2. Perform testing of local server startup and execution on the 100K dataset.
+### Step 12: Prepare Story (96% - 98%) - [COMPLETED]
+Formulate the hackathon narrative: problem framing is career trajectory and authenticity trust, not a simple ATS text matching task. Highlight honeypot avoidance.
+
+### Step 13: Final Touch (98% - 100%) - [COMPLETED]
+Push the clean codebase to the remote GitHub repository. Complete the `README.md` and include target submission metadata.
 
 ---
 
@@ -268,61 +238,27 @@ jobs:
 
 ---
 
-## 8. Local Run Guide & CLI Usage
+## 8. Run Guide & CLI Usage
 
-### Requirements file setup
-File: [requirements.txt](file:///d:/INDIA%20RUN/requirements.txt)
-```text
-pandas>=2.2.3
-numpy>=2.1.0
-networkx==3.3
-scikit-learn>=1.5.2
-fastapi==0.111.0
-uvicorn==0.29.0
-pytest==8.2.2
-ruff==0.4.9
+### Running the CLI Engine (Stage 3 Sandboxed Execution)
+Execute the official hackathon runner command from the repository root:
+```bash
+python rank.py --candidates ./data/candidates.jsonl --out ./output/submission.csv
 ```
 
 ### Running the Web Server Dashboard
-Start the server from the repository root:
+Start the FastAPI server:
 ```bash
 python src/main.py --server
 ```
-Once running, open your web browser to: **`http://127.0.0.1:8000`**
-
-### Running the CLI Engine
-Alternatively, process data silently in the terminal:
-```bash
-python src/main.py --input data/candidates.jsonl --output output/output.csv
-```
+Visit **`http://127.0.0.1:8000`** in your browser.
 
 ---
 
-## 9. QA and Anomaly Verification
-
-### Unit Test Setup
-File location: [test_shield.py](file:///d:/INDIA%20RUN/tests/test_shield.py)
-
-```python
-import pytest
-from src.shield import check_timeline_overlap
-
-def test_anomaly_overlap_caught():
-    career_jobs = [
-        {"company": "Google", "start_date": "2023-01-01", "end_date": "2023-12-31"},
-        {"company": "Meta", "start_date": "2023-06-01", "end_date": "2024-06-01"}
-    ]
-    overlap_flag = check_timeline_overlap(career_jobs)
-    assert overlap_flag > 0.0, "Timeline overlaps should trigger a penalty."
-```
-
----
-
-## 10. Risk & Mitigation Matrix
+## 9. Risk & Mitigation Matrix
 
 | Risk | Cause | Mitigation |
 | :--- | :--- | :--- |
 | **Out of Memory Error** | Loading 100K JSON dict structures simultaneously. | Stream files using generators and dump directly into structured Pandas/NumPy arrays. |
 | **Slow Graph Computations** | Running Dijkstra on all node variants. | Canonicalize titles prior to adding nodes; use BFS adjacency hops limited to target nodes. |
-| **Web Upload Limits** | Uploading heavy JSONL files over API. | Implement chunk-by-chunk streaming in the frontend and background parsing in FastAPI. |
-| **UI Freeze during Ingestion**| Blocking UI thread while server processes 100K records. | Add an animated spinner/progress bar in the UI; return response codes instantly and execute processing asynchronously. |
+| **Honeypot Disqualification** | System failing to catch synthetic profiles. | Implement a multiplicative trust score gate that zeros out candidates containing timeline anomalies. |
