@@ -1,5 +1,4 @@
 import pytest
-
 from src.ingest import CandidateModel
 from src.normalize import normalize_skill, normalize_title
 

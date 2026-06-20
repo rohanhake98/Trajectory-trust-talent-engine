@@ -1,5 +1,4 @@
 import pytest
-
 from src.features import (
     calculate_convertibility_score,
     calculate_static_fit,
@@ -7,6 +6,7 @@ from src.features import (
     calculate_trajectory_score,
 )
 from src.ingest import CandidateModel
+
 from tests.test_ingest import MOCK_CANDIDATE
 
 

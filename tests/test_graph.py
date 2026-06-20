@@ -1,7 +1,7 @@
 import pytest
-
 from src.graph import build_career_graph, get_transition_score
 from src.ingest import CandidateModel
+
 from tests.test_ingest import MOCK_CANDIDATE
 
 

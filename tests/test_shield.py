@@ -1,5 +1,4 @@
 import pytest
-
 from src.ingest import CandidateModel
 from src.shield import (
     calculate_stuffing_ratio,
@@ -7,6 +6,7 @@ from src.shield import (
     calculate_trust_score,
     check_timeline_overlap,
 )
+
 from tests.test_ingest import MOCK_CANDIDATE
 
 

@@ -3,8 +3,8 @@ import json
 import os
 
 import pytest
-
 from src.ranker import process_and_rank
+
 from tests.test_ingest import MOCK_CANDIDATE
 
 
