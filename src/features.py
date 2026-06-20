@@ -117,14 +117,14 @@ def calculate_static_fit(candidate: CandidateModel) -> float:
     title_sim = calculate_title_similarity(candidate.profile.current_title, config.TARGET_TITLE)
 
     # 2. Skill Overlap (Must-Haves & Nice-To-Haves)
-    target_skills_set = set(config.REQUIRED_SKILLS)
-    nice_skills_set = set(config.NICE_TO_HAVE_SKILLS)
+    target_skills_set = {s.strip().lower() for s in config.REQUIRED_SKILLS}
+    nice_skills_set = {s.strip().lower() for s in config.NICE_TO_HAVE_SKILLS}
 
     matched_skills_score = 0.0
     proficiency_weights = {"beginner": 0.5, "intermediate": 0.7, "advanced": 0.9, "expert": 1.0}
 
     for skill in candidate.skills:
-        normalized_name = normalize_skill(skill.name)
+        normalized_name = normalize_skill(skill.name).strip().lower()
         if normalized_name in target_skills_set:
             prof_val = proficiency_weights.get(skill.proficiency.lower(), 0.5)
             # Endorsement weight boost: up to +0.2 max for highly endorsed skills
@@ -193,9 +193,9 @@ def calculate_trajectory_score(
     career_velocity = min(1.0, job_changes / max(1.0, years_exp / 2.0))
 
     # 2. Skill Acquisition Rate
-    target_skills_set = set(config.REQUIRED_SKILLS)
+    target_skills_set = {s.strip().lower() for s in config.REQUIRED_SKILLS}
     target_skills_count = sum(
-        1 for s in candidate.skills if normalize_skill(s.name) in target_skills_set
+        1 for s in candidate.skills if normalize_skill(s.name).strip().lower() in target_skills_set
     )
     skill_acq_rate = min(1.0, target_skills_count / max(1.0, years_exp / 2.0))
 
