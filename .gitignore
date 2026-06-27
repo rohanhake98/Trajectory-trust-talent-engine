@@ -11,9 +11,9 @@ __pycache__/
 
 # Environments
 .env
-.venv
-env/
-venv/
+.venv*
+env*
+venv*
 ENV/
 env.bak/
 venv.bak/
@@ -27,5 +27,12 @@ uploaded_candidates.jsonl
 # Original raw challenge data and archives
 *India_runs_data_and_ai_challenge*
 __MACOSX*
+
+# Temporary unpacked assets and office locks
+PPT/unpacked/
+~$*.pptx
+~$*.docx
+~$*.xlsx
+
 
 
